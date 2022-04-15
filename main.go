@@ -22,10 +22,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	contractAddress := common.HexToAddress("0x147B8eb97fD247D06C4006D269c90C1908Fb5D54")
+	contractAddress := common.HexToAddress("0x3437030B6992Cd309e362269187a1b104DE0130E")
 	query := ethereum.FilterQuery{
 		FromBlock: big.NewInt(1),
-		ToBlock:   big.NewInt(23942010),
+		ToBlock:   big.NewInt(239420100),
 		Addresses: []common.Address{
 			contractAddress,
 		},
@@ -46,28 +46,24 @@ func main() {
 		fmt.Println(vLog.BlockNumber)     // 2394201
 		fmt.Println(vLog.TxHash.Hex())    // 0x280201eda63c9ff6f305fcee51d5eb86167fab40ca3108ec784e8652a0e2b1a6
 
-		/* type Event interface {
-
-		   } */
-
 		event := struct {
-			Key   [32]byte
-			Value [32]byte
+			Address [20]byte
+			Value   uint
 		}{}
-		err := contractAbi.UnpackIntoInterface(&event, "ItemSet", vLog.Data)
+		err := contractAbi.UnpackIntoInterface(&event, "Pledge", vLog.Data)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println(string(event.Key[:]))   // foo
-		fmt.Println(string(event.Value[:])) // bar
+		fmt.Println(string(event.Address[:])) // foo
+		fmt.Println(uint(event.Value))        // bar
 
 		var topics [4]string
 		for i := range vLog.Topics {
 			topics[i] = vLog.Topics[i].Hex()
 		}
 
-		fmt.Println(topics[0]) // 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4
+		fmt.Println("address (Pledgee):", topics[0]) // 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4
 	}
 
 	eventSignature := []byte("ItemSet(bytes32,bytes32)")
