@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	store "stakesigner/contracts" // for demo
+	stake "stakesigner/contracts" // for demo
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	contractAbi, err := abi.JSON(strings.NewReader(string(store.StoreABI)))
+	contractAbi, err := abi.JSON(strings.NewReader(string(stake.StakeABI)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +50,8 @@ func main() {
 			Address [20]byte
 			Value   uint
 		}{}
-		err := contractAbi.UnpackIntoInterface(&event, "Pledge", vLog.Data)
+		err := contractAbi.UnpackIntoInterface(&event, "pledge", vLog.Data)
+		// Pledge was case sensitive :weary:
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -66,7 +67,7 @@ func main() {
 		fmt.Println("address (Pledgee):", topics[0]) // 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4
 	}
 
-	eventSignature := []byte("ItemSet(bytes32,bytes32)")
+	eventSignature := []byte("Pledge(bytes20, uint)")
 	hash := crypto.Keccak256Hash(eventSignature)
 	fmt.Println(hash.Hex()) // 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4
 }
